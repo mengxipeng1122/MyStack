@@ -4,6 +4,24 @@ import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import * as dat from 'dat.gui'
 
+
+function initScene(scene)
+{
+    //scene.background = new THREE.Color(0x000000);
+    var urls = [
+        './assets/skybox/dawnclouds/px.jpg',
+        './assets/skybox/dawnclouds/nx.jpg',
+        './assets/skybox/dawnclouds/py.jpg',
+        './assets/skybox/dawnclouds/ny.jpg',
+        './assets/skybox/dawnclouds/pz.jpg',
+        './assets/skybox/dawnclouds/nz.jpg',
+    ];
+    var cube = new THREE.CubeTextureLoader().load( urls );
+     // 
+    scene.background = cube;
+
+}
+
 // Debug
 const gui = new dat.GUI()
 
@@ -12,8 +30,7 @@ const canvas = document.querySelector('canvas.webgl')
 
 // Scene
 const scene = new THREE.Scene()
-
-scene.background = new THREE.Color(0x000000);
+initScene(scene);
 
 
 /**
