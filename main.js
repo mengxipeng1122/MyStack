@@ -19,7 +19,14 @@ function initScene(scene)
     var cube = new THREE.CubeTextureLoader().load( urls );
      // 
     scene.background = cube;
+}
 
+function addBoxMesh(scene)
+{
+    const geometry = new THREE.BoxGeometry(3,1,3);
+    const material = new THREE.MeshLambertMaterial({color: 0xff8000});
+    const mesh     = new THREE.Mesh(geometry, material);
+    scene.add(mesh);
 }
 
 // Debug
@@ -32,6 +39,8 @@ const canvas = document.querySelector('canvas.webgl')
 const scene = new THREE.Scene()
 initScene(scene);
 
+
+addBoxMesh(scene);
 
 /**
  * Sizes
@@ -61,11 +70,13 @@ window.addEventListener('resize', () =>
  */
 // Base camera
 const camera = new THREE.PerspectiveCamera(45, sizes.width / sizes.height, 0.1, 10000)
+camera.position.x = 0;
+camera.position.y = 5;
+camera.position.z = 8;
 scene.add(camera)
 
 // Controls
  const controls = new OrbitControls(camera, canvas); controls.enableDamping = true
- controls.target.set(1.898002955037251, 2.4718079789153857, -1.6414260344409988)
 
 /**
  * Renderer
