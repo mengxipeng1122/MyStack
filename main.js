@@ -22,7 +22,74 @@ function initScene(scene)
     scene.background = cube;
 }
 
-function addBoxMesh(scene)
+function addPlane(scene, world)
+{
+    const planeGeometry = new THREE.BoxGeometry(25,  .5, 25 )
+    const phongMaterial = new THREE.MeshPhongMaterial()
+    const planeMesh = new THREE.Mesh(planeGeometry, phongMaterial)
+    planeMesh.receiveShadow = true
+    scene.add(planeMesh)
+
+    const planeShape = new CANNON.Plane()
+    const planeBody = new CANNON.Body({ mass: 0 })
+    planeBody.addShape(planeShape)
+    planeBody.quaternion.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), -Math.PI / 2)
+    world.addBody(planeBody)
+
+}
+
+function addSphere(scene, world) 
+{
+    const normalMaterial = new THREE.MeshNormalMaterial()
+    const sphereGeometry = new THREE.SphereGeometry()
+    const sphereMesh = new THREE.Mesh(sphereGeometry, normalMaterial)
+    sphereMesh.position.x = -1
+    sphereMesh.position.y = 5
+    sphereMesh.position.z = 0
+    sphereMesh.castShadow = true
+    scene.add(sphereMesh)
+    const sphereShape = new CANNON.Sphere(1)
+    const sphereBody = new CANNON.Body({ mass: .01 })
+    sphereBody.addShape(sphereShape)
+    sphereBody.position.x = sphereMesh.position.x
+    sphereBody.position.y = sphereMesh.position.y
+    sphereBody.position.z = sphereMesh.position.z
+    world.addBody(sphereBody)
+    return {sphereMesh, sphereBody}
+}
+
+
+function addLights(scene)
+{
+//    const light1 = new THREE.SpotLight()
+//    light1.position.set(2.5, 5, 5)
+//    light1.angle = Math.PI / 4
+//    light1.penumbra = 0.5
+//    light1.castShadow = true
+//    light1.shadow.mapSize.width = 1024
+//    light1.shadow.mapSize.height = 1024
+//    light1.shadow.camera.near = 0.5
+//    light1.shadow.camera.far = 20
+//    scene.add(light1)
+//    
+//    const light2 = new THREE.SpotLight()
+//    light2.position.set(-2.5, 5, 5)
+//    light2.angle = Math.PI / 4
+//    light2.penumbra = 0.5
+//    light2.castShadow = true
+//    light2.shadow.mapSize.width = 1024
+//    light2.shadow.mapSize.height = 1024
+//    light2.shadow.camera.near = 0.5
+//    light2.shadow.camera.far = 20
+//    scene.add(light2)
+    {
+        const light = new THREE.AmbientLight({color:0x55ffbb})
+        scene.add(light);
+    }
+}
+
+
+function addBoxMesh(scene, world)
 {
     const geometry = new THREE.BoxGeometry(3,1,3);
     const material = new THREE.MeshLambertMaterial({color: 0xff8000});
@@ -60,12 +127,20 @@ initScene(scene);
 
 // World
 var world = new CANNON.World({
-   gravity: new CANNON.Vec3(0, 0, -9.82) // m/s²
+//   gravity: new CANNON.Vec3(0, 0, -9.82) // m/s²
 });
+world.gravity.set(0, -9.82, 0)
     
 
 
-addBoxMesh(scene);
+// addBoxMesh(scene, world);
+addPlane(scene, world)
+
+
+const {sphereMesh, sphereBody} =  addSphere(scene, world)
+console.log(sphereMesh, sphereBody);
+
+addLights(scene)
 
 /**
  * Sizes
@@ -110,8 +185,8 @@ window.addEventListener("keydown", function(event){
 // Base camera
 const camera = new THREE.PerspectiveCamera(45, sizes.width / sizes.height, 0.1, 10000)
 camera.position.x = 0;
-camera.position.y = 5;
-camera.position.z = 8;
+camera.position.y = 50;
+camera.position.z = 80;
 scene.add(camera)
 
 // Controls
@@ -143,11 +218,26 @@ const tick = () =>
     // controls.movementSpeed = 0.033 * elapsedTime;
     // Update Orbital Controls
     controls.update(elapsedTime)
+    //world.step(1/60., elapsedTime, 3);
+    world.step(elapsedTime);
+
+    console.log(sphereBody.position)
+
+    sphereMesh.position.set(
+        sphereBody.position.x,
+        sphereBody.position.y,
+        sphereBody.position.z);
+
+    sphereMesh.quaternion.set(
+        sphereBody.quaternion.x,
+        sphereBody.quaternion.y,
+        sphereBody.quaternion.z,
+        sphereBody.quaternion.w
+    )
 
     // Render
     renderer.render(scene, camera)
 
-    world.step(1/60., elapsedTime, 3);
 
     // Call tick again on the next frame
     window.requestAnimationFrame(tick)
