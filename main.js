@@ -1,6 +1,7 @@
 import './style.css'
 
 import * as THREE from 'three'
+import * as CANNON from 'cannon'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import * as dat from 'dat.gui'
 
@@ -29,6 +30,24 @@ function addBoxMesh(scene)
     scene.add(mesh);
 }
 
+function addCannon(scene)
+{
+    // Setup our world
+    // Create a sphere
+    var radius = 1; // m
+    var sphereBody = new CANNON.Body({
+       mass: 5, // kg
+       position: new CANNON.Vec3(0, 0, 10), // m
+       shape: new CANNON.Sphere(radius)
+    });
+    world.addBody(sphereBody);
+    
+    // Create a plane
+    var groundBody = new CANNON.Body({
+        mass: 0 // mass == 0 makes the body static
+    });
+}
+
 // Debug
 const gui = new dat.GUI()
 
@@ -38,6 +57,12 @@ const canvas = document.querySelector('canvas.webgl')
 // Scene
 const scene = new THREE.Scene()
 initScene(scene);
+
+// World
+var world = new CANNON.World({
+   gravity: new CANNON.Vec3(0, 0, -9.82) // m/s²
+});
+    
 
 
 addBoxMesh(scene);
@@ -64,6 +89,20 @@ window.addEventListener('resize', () =>
     renderer.setSize(sizes.width, sizes.height)
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 })
+
+function eventHandler() {
+}
+
+window.addEventListener("mousedown", eventHandler);
+window.addEventListener("touchstart", eventHandler);
+window.addEventListener("keydown", function(event){
+    if (event.key == ' ')
+    {
+        event.preventDefault();
+        console.log(' space key just is pressed')
+        return;
+    }
+});
 
 /**
  * Camera
@@ -107,6 +146,8 @@ const tick = () =>
 
     // Render
     renderer.render(scene, camera)
+
+    world.step(1/60., elapsedTime, 3);
 
     // Call tick again on the next frame
     window.requestAnimationFrame(tick)
