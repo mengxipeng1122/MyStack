@@ -8,18 +8,22 @@ import * as dat from 'dat.gui'
 
 function initScene(scene)
 {
-    //scene.background = new THREE.Color(0x000000);
-    var urls = [
-        './assets/skybox/dawnclouds/px.jpg',
-        './assets/skybox/dawnclouds/nx.jpg',
-        './assets/skybox/dawnclouds/py.jpg',
-        './assets/skybox/dawnclouds/ny.jpg',
-        './assets/skybox/dawnclouds/pz.jpg',
-        './assets/skybox/dawnclouds/nz.jpg',
-    ];
-    var cube = new THREE.CubeTextureLoader().load( urls );
-     // 
-    scene.background = cube;
+    if (true)
+    {
+        scene.background = new THREE.Color(0x000000);
+    }
+    else
+    {
+        const  urls = [
+            './assets/skybox/dawnclouds/px.jpg',
+            './assets/skybox/dawnclouds/nx.jpg',
+            './assets/skybox/dawnclouds/py.jpg',
+            './assets/skybox/dawnclouds/ny.jpg',
+            './assets/skybox/dawnclouds/pz.jpg',
+            './assets/skybox/dawnclouds/nz.jpg',
+        ];
+        scene.background = new THREE.CubeTextureLoader().load( urls );
+    }
 }
 
 function addPlane(scene, world)
