@@ -10,8 +10,13 @@
     "vite": "^2.4.4"
   },
   "dependencies": {
+    "@enable3d/ammo-physics": "~0.22.0",
+    "@enable3d/three-graphics": "~0.22.0",
+    "ammo.js": "0.0.10",
     "cannon": "^0.6.2",
     "dat.gui": "^0.7.7",
+    "enable3d": "~0.22.0",
+    "matter-js": "0.16.1",
     "three": "^0.131.1"
   }
 }
